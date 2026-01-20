@@ -360,24 +360,28 @@ if st.session_state["questions"]:
         
             except Exception as e:
                 st.error(f"⚠️ Audio transcription failed: {e}")
+
+        if st.session_state[buffer_key]:
+            st.session_state[answer_key] = (
+                st.session_state.get(answer_key, "") +
+                (" " if st.session_state.get(answer_key) else "") +
+                st.session_state[buffer_key]
+            ).strip()
+            st.session_state[buffer_key] = ""
         
         current_text = st.text_area(
             "✏️ Your Answer:",
             height=80,
             key=answer_key,
-            value=(
-                st.session_state.get(answer_key, "") +
-                (" " if st.session_state[buffer_key] else "") +
-                st.session_state[buffer_key]
             ).strip()
         )
 
-    # Clear buffer once applied
-    st.session_state[buffer_key] = ""
+        # Clear buffer once applied
+        st.session_state[buffer_key] = ""
+        
+        st.session_state["user_answers"][i] = current_text
     
-    st.session_state["user_answers"][i] = current_text
-
-    user_answers = st.session_state.get("user_answers", [])
+        user_answers = st.session_state.get("user_answers", [])
 
     # -------------------------------
     # EVALUATION
