@@ -307,6 +307,12 @@ if st.session_state["questions"]:
 
         st.markdown("🎤 Dictate your answer (you can record multiple times):")
         qid = st.session_state["question_set_id"]
+        answer_key = f"ans_{qid}_{i}"
+        buffer_key = f"dictation_buffer_{qid}_{i}"
+            
+            if buffer_key not in st.session_state:
+                st.session_state[buffer_key] = ""
+                
         audio_data = st.audio_input(
             "",
             key=f"audio_input_{qid}_{i}"
@@ -344,11 +350,9 @@ if st.session_state["questions"]:
                     dictated_text = getattr(transcription, "text", "").strip()
         
                     if dictated_text:
-                        # ✅ Append to CURRENT text area value
-                        existing_text = st.session_state.get(key, "").strip()
-                        new_text = f"{existing_text} {dictated_text}" if existing_text else dictated_text
-                        st.session_state[key] = new_text
-                        st.session_state["user_answers"][i] = new_text
+                        st.session_state[buffer_key] += (
+                            " " + dictated_text if st.session_state[buffer_key] else dictated_text
+                        )
                         st.session_state[last_hash_key] = audio_hash
                         st.success("🎧 Dictation appended to your answer.", icon="🎤")
                     else:
@@ -356,19 +360,22 @@ if st.session_state["questions"]:
         
             except Exception as e:
                 st.error(f"⚠️ Audio transcription failed: {e}")
+        
+        current_text = st.text_area(
+            "✏️ Your Answer:",
+            height=80,
+            key=answer_key,
+            value=(
+                st.session_state.get(answer_key, "") +
+                (" " if st.session_state[buffer_key] else "") +
+                st.session_state[buffer_key]
+            ).strip()
+        )
 
-        label = "✏️ Your Answer:"
-        key = f"ans_{qid}_{i}"  # unified key
-        existing_text = st.session_state.get(key, "").strip()
-        if existing_text:
-            new_text = f"{existing_text} {dictated_text}"
-        else:
-            new_text = dictated_text
-        
-        st.session_state[key] = new_text
-        st.session_state["user_answers"][i] = new_text
-        
-        current_text = st.text_area(label, height=80, key=key)
+# Clear buffer once applied
+st.session_state[buffer_key] = ""
+
+st.session_state["user_answers"][i] = current_text
 
     user_answers = st.session_state.get("user_answers", [])
 
