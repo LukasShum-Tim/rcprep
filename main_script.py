@@ -62,7 +62,7 @@ uploaded_file = st.file_uploader("📄 Upload a PDF file", type=["pdf"])
 
 def extract_text_from_pdf(pdf_bytes):
     text = ""
-    with fitz.open(stream=pdf_bytes, filetype="pdf") as pdf_doc:
+    with fitz.open(stream=io.BytesIO(pdf_bytes), filetype="pdf") as pdf_doc:
         for page in pdf_doc:
             text += page.get_text("text")
     return text
@@ -124,16 +124,28 @@ def get_used_topics():
 # -------------------------------
 # QUESTION GENERATION (Single GPT Call, Previous Sets)
 # -------------------------------
-if pdf_text:
+if uploaded_file:
     st.subheader("🧩 Step 1: Generate Short-Answer Questions")
 
     num_questions = st.slider("Number of questions to generate:",1, 10, key="num_questions")
-
+    
+    if not pdf_text:
+    st.warning(
+        "⚠️ This PDF appears to be scanned or image-based. "
+        "Text extraction returned empty. OCR is required."
+    )
     # Trigger generation if user clicks "Generate Questions" OR new set flag is set
     if st.button("⚡ Generate Questions"):
-        st.session_state["generate_now"] = True
-        st.session_state["question_set_id"] += 1
-        st.rerun()
+        if not pdf_text:
+            st.error(
+                "❌ Cannot generate questions because no text could be extracted.\n\n"
+                "This PDF is likely scanned. Please upload a text-based PDF "
+                "or enable OCR support."
+            )
+        else:
+            st.session_state["generate_now"] = True
+            st.session_state["question_set_id"] += 1
+            st.rerun()
             
     if st.session_state.get("generate_now"):
         st.session_state["generate_now"] = False
