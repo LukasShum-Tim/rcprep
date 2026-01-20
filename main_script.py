@@ -345,14 +345,16 @@ if st.session_state["questions"]:
         
                     if dictated_text:
                         # ✅ Append to CURRENT text area value
-                        existing_text = st.session_state.get(f"ans_{qid}_{i}", "").strip()
-                        if existing_text:
-                            new_text = f"{existing_text} {dictated_text}"
-                        else:
-                            new_text = dictated_text
+                        #existing_text = st.session_state.get(f"ans_{qid}_{i}", "").strip()
+                        #if existing_text:
+                         #   new_text = f"{existing_text} {dictated_text}"
+                        #else:
+                         #   new_text = dictated_text
         
-                        st.session_state[f"ans_{qid}_{i}"] = new_text
-                        st.session_state["user_answers"][i] = new_text
+                        #st.session_state[f"ans_{qid}_{i}"] = new_text
+                        #st.session_state["user_answers"][i] = new_text
+                        current_text = st.text_area("✏️ Your Answer:", height=80, key=key)
+                        st.session_state["user_answers"][i] = current_text
                         st.session_state[last_hash_key] = audio_hash
         
                         st.success("🎧 Dictation appended to your answer.", icon="🎤")
