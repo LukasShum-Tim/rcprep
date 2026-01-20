@@ -130,9 +130,9 @@ if uploaded_file:
     num_questions = st.slider("Number of questions to generate:",1, 10, key="num_questions")
     
     if not pdf_text:
-    st.warning(
-        "⚠️ This PDF appears to be scanned or image-based. "
-        "Text extraction returned empty. OCR is required."
+        st.warning(
+            "⚠️ This PDF appears to be scanned or image-based. "
+            "Text extraction returned empty. OCR is required."
     )
     # Trigger generation if user clicks "Generate Questions" OR new set flag is set
     if st.button("⚡ Generate Questions"):
