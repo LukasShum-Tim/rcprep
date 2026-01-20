@@ -84,6 +84,8 @@ if uploaded_file:
 
 pdf_text = st.session_state.get("pdf_text", "")
 
+if uploaded_file and not pdf_text:
+    st.warning("PDF uploaded, but no text was extracted.")
 
 # -------------------------------
 # Question Topic Extraction
