@@ -372,10 +372,10 @@ if st.session_state["questions"]:
             ).strip()
         )
 
-# Clear buffer once applied
-st.session_state[buffer_key] = ""
-
-st.session_state["user_answers"][i] = current_text
+    # Clear buffer once applied
+    st.session_state[buffer_key] = ""
+    
+    st.session_state["user_answers"][i] = current_text
 
     user_answers = st.session_state.get("user_answers", [])
 
