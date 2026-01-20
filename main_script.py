@@ -374,7 +374,6 @@ if st.session_state["questions"]:
             height=80,
             key=answer_key,
             ).strip()
-        )
 
         # Clear buffer once applied
         st.session_state[buffer_key] = ""
