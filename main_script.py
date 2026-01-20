@@ -60,18 +60,24 @@ if "generate_now" not in st.session_state:
 # -------------------------------
 uploaded_file = st.file_uploader("📄 Upload a PDF file", type=["pdf"])
 
-def extract_text_from_pdf(uploaded_file):
+def extract_text_from_pdf(pdf_bytes):
     text = ""
-    with fitz.open(stream=uploaded_file.read(), filetype="pdf") as pdf_doc:
+    with fitz.open(stream=pdf_bytes, filetype="pdf") as pdf_doc:
         for page in pdf_doc:
             text += page.get_text("text")
     return text
-    
+
 if uploaded_file:
-    if "pdf_text" not in st.session_state or st.session_state.get("uploaded_file_name") != uploaded_file.name:
-        pdf_text = extract_text_from_pdf(uploaded_file)
+    if (
+        "pdf_text" not in st.session_state
+        or st.session_state.get("uploaded_file_name") != uploaded_file.name
+    ):
+        pdf_bytes = uploaded_file.getvalue()  # ✅ NOT .read()
+        pdf_text = extract_text_from_pdf(pdf_bytes)
+
         st.session_state["pdf_text"] = pdf_text
         st.session_state["uploaded_file_name"] = uploaded_file.name
+
         st.success("✅ PDF uploaded successfully!")
     else:
         pdf_text = st.session_state["pdf_text"]
