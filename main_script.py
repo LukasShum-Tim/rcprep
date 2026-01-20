@@ -58,7 +58,7 @@ if "generate_now" not in st.session_state:
 # -------------------------------
 # PDF UPLOAD
 # -------------------------------
-uploaded_file = st.file_uploader(bilingual_text_ui("📄 Upload a PDF file"), type=["pdf"])
+uploaded_file = st.file_uploader("📄 Upload a PDF file", type=["pdf"])
 
 def extract_text_from_pdf(uploaded_file):
     text = ""
@@ -114,7 +114,7 @@ def get_used_topics():
     return sorted(list(used))
 
 # -------------------------------
-# QUESTION GENERATION (Single GPT Call, Bilingual, Previous Sets)
+# QUESTION GENERATION (Single GPT Call, Previous Sets)
 # -------------------------------
 if pdf_text:
     st.subheader("🧩 Step 1: Generate Short-Answer Questions")
@@ -234,39 +234,24 @@ if pdf_text:
                 if item.get("question") and item.get("answer_key")
             ]
             
-            progress.progress(50, text=bilingual_text_ui("Questions generated. Translating..."))
+            progress.progress(50, text="Questions generated.")
     
         except Exception as e:
-            st.error(bilingual_text_ui(f"⚠️ Question generation failed: {e}"))
+            st.error(f"⚠️ Question generation failed: {e}")
             all_questions = []
     
         if all_questions:
+            unilingual_questions = []
+
             # -------------------------------
-            # 2️⃣ Bilingual translation (batched)
+            #  Save to session state
             # -------------------------------
-            bilingual_questions = []
-    
-            if target_language_name == "English":
-                for q in all_questions:
-                    bilingual_questions.append({
-                        "question_en": q.get("question", ""),
-                        "answer_key_en": q.get("answer_key", "")
-                    })
-            else:
-                # Prepare batch text for GPT translation to minimize API calls
-                batch_text = "\n\n".join(
-                    [f"Q: {q.get('question','')}\nA: {q.get('answer_key','')}" for q in all_questions]
-                )
-                
-            # -------------------------------
-            # 3️⃣ Save to session state
-            # -------------------------------
-            st.session_state["questions"] = bilingual_questions
-            st.session_state["user_answers"] = [""] * len(bilingual_questions)
+            st.session_state["questions"] = unilingual_questions
+            st.session_state["user_answers"] = [""] * len(unilingual_questions)
             progress.progress(100, text="✅ Done! Questions ready.")
     
             # -------------------------------
-            # 4️⃣ Store previous sets
+            #  Store previous sets
             # -------------------------------
             if "all_question_sets" not in st.session_state:
                 st.session_state["all_question_sets"] = []
@@ -278,13 +263,13 @@ if pdf_text:
             
             st.session_state["all_question_sets"].append({
                 "set_id": new_set_id,
-                "questions": bilingual_questions,
+                "questions": unilingual_questions,
                 "topics": topics,
                 "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
             })
 
             st.session_state["current_set_id"] = new_set_id
-            st.success(f"Generated {len(bilingual_questions)} representative questions successfully!")
+            st.success(f"Generated {len(unilingual_questions)} representative questions successfully!")
 
 # -------------------------------
 # USER ANSWERS (WITH AUDIO INPUT)
@@ -459,10 +444,10 @@ if st.session_state["questions"]:
             # -------------------------------
             # Display total score
             # -------------------------------
-            st.markdown(f"### 🏆 {bilingual_text_ui('Total Score')}: {total_score}/{max_score} ({percentage}%)")
+            st.markdown(f"### 🏆 {'Total Score'}: {total_score}/{max_score} ({percentage}%)")
             
-            st.success(bilingual_text_ui("✅ Evaluation complete!"))
-            with st.expander(bilingual_text_ui("📊 Detailed Feedback")):
+            st.success("✅ Evaluation complete!")
+            with st.expander("📊 Detailed Feedback"):
                 for i, (q, r) in enumerate(zip(questions, results)):
                     st.markdown(f"### Q{i+1}: {q.get('question_en', '')}")
                     st.markdown(f"**Score:** {r.get('score', 'N/A')} / 10")
@@ -478,7 +463,7 @@ if st.session_state["questions"]:
     # -------------------------------
     # NEW BUTTON: Generate a new set of questions
     # -------------------------------
-    if st.button(bilingual_text_ui("🔄 Generate a New Set of Questions")):
+    if st.button("🔄 Generate a New Set of Questions"):
         st.session_state["questions"] = []
         st.session_state["user_answers"] = []
         st.session_state["evaluations"] = []
