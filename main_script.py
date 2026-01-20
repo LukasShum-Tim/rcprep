@@ -23,6 +23,7 @@ st.set_page_config(
 st.title("📘 Residency and Fellowship Board Exam Short Answer Question Generator")
 st.markdown("Upload a PDF, generate short-answer questions, answer the questions, and get feedback.")
 st.markdown("If you are using a mobile device, make sure to use a pdf file that is downloaded locally, and not uploaded from a Cloud Drive to prevent an upload error.")
+st.markdown("This app currently does not support image-based recognition. If your pdf file is made of scanned pages, please use a OCR converter to text. You can find one for free here : https://www.ilovepdf.com/ocr-pdf")
 
 # -------------------------------
 # SESSION STATE INITIALIZATION
