@@ -310,8 +310,8 @@ if st.session_state["questions"]:
         answer_key = f"ans_{qid}_{i}"
         buffer_key = f"dictation_buffer_{qid}_{i}"
             
-            if buffer_key not in st.session_state:
-                st.session_state[buffer_key] = ""
+        if buffer_key not in st.session_state:
+            st.session_state[buffer_key] = ""
                 
         audio_data = st.audio_input(
             "",
