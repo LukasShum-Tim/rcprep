@@ -99,7 +99,7 @@ Extract a concise topic label (2–5 words) for each of the following oral board
 Return ONLY a JSON list of UNIQUE topic strings.
 
 QUESTIONS:
-{json.dumps([q["question_en"] for q in questions], indent=2)}
+{json.dumps([q["question"] for q in questions], indent=2)}
 """
     response = client.chat.completions.create(
         model="gpt-4o-mini",
@@ -261,14 +261,14 @@ if uploaded_file:
             all_questions = []
     
         if all_questions:
-            unilingual_questions = []
+            unilingual_questions = all_questions
 
             # -------------------------------
             #  Save to session state
             # -------------------------------
             st.session_state["questions"] = unilingual_questions
             st.session_state["user_answers"] = [""] * len(unilingual_questions)
-            progress.progress(100, text="✅ Done! Questions ready.")
+            progress.progress(100, text="✅ Done! Questions ready!")
     
             # -------------------------------
             #  Store previous sets
@@ -303,12 +303,7 @@ if st.session_state["questions"]:
         st.session_state["user_answers"] = [""] * len(questions)
 
     for i, q in enumerate(questions):
-        st.markdown(f"### Q{i+1}. {q.get('question_en', '')}")
-
-        if target_language_name == "English":
-            pass
-        else:    
-            st.markdown(f"**({target_language_name}):** {q.get('question_translated', '')}")
+        st.markdown(f"### Q{i+1}. {q.get('question', '')}")
 
         st.markdown("🎤 Dictate your answer (you can record multiple times):")
         qid = st.session_state["question_set_id"]
@@ -424,8 +419,8 @@ if st.session_state["questions"]:
         QUESTIONS AND RESPONSES:
         {json.dumps([
             {
-                "question": q.get("question_en", ""),
-                "expected": q.get("answer_key_en", ""),
+                "question": q.get("question", ""),
+                "expected": q.get("answer_key", ""),
                 "response": a
             }
             for q, a in zip(questions, user_answers)
@@ -469,7 +464,7 @@ if st.session_state["questions"]:
             st.success("✅ Evaluation complete!")
             with st.expander("📊 Detailed Feedback"):
                 for i, (q, r) in enumerate(zip(questions, results)):
-                    st.markdown(f"### Q{i+1}: {q.get('question_en', '')}")
+                    st.markdown(f"### Q{i+1}: {q.get('question', '')}")
                     st.markdown(f"**Score:** {r.get('score', 'N/A')} / 10")
                     st.markdown(f"**Feedback (English):** {r.get('feedback', '')}")
                     st.markdown(f"**Model Answer (English):** {r.get('model_answer', '')}")
